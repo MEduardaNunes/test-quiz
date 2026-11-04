@@ -134,3 +134,29 @@ def test_add_choice_with_invalid_text():
 
     with pytest.raises(Exception):
         question.add_choice('a'*101, False)
+
+@pytest.fixture
+def question_with_choices():
+    question = Question(title='q1', max_selections=2)
+    question.add_choice('a', True)
+    question.add_choice('b', False)
+    question.add_choice('c', True)
+    return question
+
+def test_correct_selected_choices_with_multiple_correct(question_with_choices):
+    question = question_with_choices
+    choice_a = question.choices[0]
+    choice_b = question.choices[1]
+    choice_c = question.choices[2]
+
+    response = question.correct_selected_choices([choice_a.id, choice_c.id])
+
+    assert response == [1, 3]
+
+def test_correct_selected_choices_with_no_correct(question_with_choices):
+    question = question_with_choices
+    choice_b = question.choices[1]
+
+    response = question.correct_selected_choices([choice_b.id])
+
+    assert response == []
